@@ -25,7 +25,7 @@ erDiagram
         int id PK
         date orderDate
         int customerId FK
-        string status
+        string status "pendingPayment, processing, shipped, delivered"
     }
 
     OrderItem {
