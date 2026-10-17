@@ -1,3 +1,4 @@
+```gherkin
  REQ-1
  Scenario: SC-1 Платіжний сервіс підтверджує оплату
   Given існує замовлення зі статусом pendingPayment
