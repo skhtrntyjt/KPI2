@@ -1,0 +1,42 @@
+@startuml
+left to right direction
+
+skinparam actorStyle hollow
+
+actor Користувач
+actor Клієнт
+actor Менеджер
+actor "Платіжний сервіс" as PaymentService
+actor "Служба доставки" as DeliveryService
+
+Користувач <|-- Клієнт
+Користувач <|-- Менеджер
+
+rectangle "Система" {
+    usecase "Додати гітару до замовлення" as UC1
+    usecase "Оформити замовлення" as UC2
+    usecase "Оплатити замовлення" as UC3
+    usecase "Переглянути статус замовлення" as UC4
+    usecase "Змінити статус замовлення" as UC5
+    usecase "Оновити залишок гітари" as UC6
+    usecase "Доставити замовлення" as UC7
+    usecase "Передати відправлення службі доставки" as UC8
+
+    UC2 ..> UC3 : <<include>>
+    UC8 ..> UC5 : <<extend>>\nумова: статус shipped
+}
+
+Клієнт --> UC1
+Клієнт --> UC2
+Клієнт --> UC3
+Клієнт --> UC4
+
+Менеджер --> UC5
+Менеджер --> UC6
+
+PaymentService --> UC3
+
+DeliveryService --> UC7
+DeliveryService --> UC8
+
+@enduml
