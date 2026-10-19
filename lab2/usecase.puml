@@ -33,10 +33,10 @@ rectangle "Система" {
 
 Менеджер --> UC5
 Менеджер --> UC6
+Менеджер --> UC8
 
 PaymentService --> UC3
 
 DeliveryService --> UC7
-DeliveryService --> UC8
 
 @enduml
