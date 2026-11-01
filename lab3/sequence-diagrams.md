@@ -1,3 +1,21 @@
+## SC-1 Оплату підтверджено
+```mermaid
+sequenceDiagram
+    actor Клієнт
+    participant OrderService
+    participant StockService
+    participant PaymentService
+
+    activate OrderService
+    PaymentService ->> OrderService: confirmPayment(orderId)
+    OrderService ->> OrderService: updateStatus(orderId, processing)
+    loop для кожної позиції замовлення
+        OrderService ->> StockService: decreaseStock(guitarId, quantity)
+        StockService -->> OrderService: ok
+    end
+    deactivate OrderService
+```
+
 ## SC-2 Оплату відхилено
 ```mermaid
 sequenceDiagram
