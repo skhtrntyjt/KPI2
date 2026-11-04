@@ -18,7 +18,11 @@
 ### SC-2 Оплату відхилено (REQ-2). Фрагмент: alt
 1. Клієнт → OrderService: payOrder(orderId)
 2. OrderService → PaymentService: requestPayment(orderId)
-3. alt оплату підтверджено: розписано в SC-1
+3. alt оплату підтверджено:
+   - PaymentService → OrderService: confirmPayment(orderId)
+   - OrderService → OrderService: updateStatus(orderId, processing)
+   - loop для кожної позиції замовлення:
+     OrderService → StockService: decreaseStock(guitarId, quantity), відповідь ok
    або оплату відхилено:
    - PaymentService → OrderService: declinePayment(orderId)
    - статус лишається pendingPayment
@@ -27,13 +31,25 @@
 ### SC-9 Повторна оплата (REQ-12). Фрагмент: alt
 1. Клієнт → OrderService: payOrder(orderId) (замовлення в pendingPayment, попередню оплату відхилено)
 2. OrderService → PaymentService: requestPayment(orderId)
-3. alt оплату підтверджено: розписано в SC-1
-   або оплату відхилено: статус лишається pendingPayment, notifyClient(orderId, paymentDeclined)
+3. alt оплату підтверджено:
+   - PaymentService → OrderService: confirmPayment(orderId)
+   - OrderService → OrderService: updateStatus(orderId, processing)
+   - loop для кожної позиції замовлення:
+     OrderService → StockService: decreaseStock(guitarId, quantity), відповідь ok
+   або оплату відхилено:
+   - PaymentService → OrderService: declinePayment(orderId)
+   - статус лишається pendingPayment
+   - OrderService → Клієнт: notifyClient(orderId, paymentDeclined)
 
 ### SC-10 Нестача товару на момент оплати (REQ-13). Фрагмент: alt
 1. PaymentService → OrderService: confirmPayment(orderId)
 2. OrderService → StockService: checkStock(guitarId, quantity)
-3. alt товару достатньо: далі як у SC-1
+3. alt товару достатньо:
+   - StockService → OrderService: available
+   - OrderService → OrderService: updateStatus(orderId, processing)
+   - loop для кожної позиції замовлення:
+     OrderService → StockService: decreaseStock(guitarId, quantity), відповідь ok
    або товару недостатньо:
+   - StockService → OrderService: unavailable
    - статус лишається pendingPayment
    - OrderService → Клієнт: notifyClient(orderId, outOfStock)
