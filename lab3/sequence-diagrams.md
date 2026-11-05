@@ -26,15 +26,16 @@ sequenceDiagram
     Клієнт ->> OrderService: payOrder(orderId)
     activate OrderService
     OrderService ->>+ PaymentService: requestPayment(orderId)
+    deactivate PaymentService
     alt оплату підтверджено
-        PaymentService -->>- OrderService: confirmPayment(orderId)
+        PaymentService -->> OrderService: confirmPayment(orderId)
         OrderService ->> OrderService: updateStatus(orderId, processing)
         loop для кожної позиції замовлення
             OrderService ->>+ StockService: decreaseStock(guitarId, quantity)
             StockService -->>- OrderService: ok
         end
     else оплату відхилено
-        PaymentService -->>- OrderService: declinePayment(orderId)
+        PaymentService -->> OrderService: declinePayment(orderId)
         Note over OrderService: статус лишається pendingPayment
         OrderService ->> Клієнт: notifyClient(orderId, paymentDeclined)
     end
@@ -53,15 +54,16 @@ sequenceDiagram
     activate OrderService
     Note over Клієнт,OrderService: замовлення в pendingPayment, попередню оплату відхилено
     OrderService ->>+ PaymentService: requestPayment(orderId)
+    deactivate PaymentService
     alt оплату підтверджено
-        PaymentService -->>- OrderService: confirmPayment(orderId)
+        PaymentService -->> OrderService: confirmPayment(orderId)
         OrderService ->> OrderService: updateStatus(orderId, processing)
         loop для кожної позиції замовлення
             OrderService ->>+ StockService: decreaseStock(guitarId, quantity)
             StockService -->>- OrderService: ok
         end
     else оплату відхилено
-        PaymentService -->>- OrderService: declinePayment(orderId)
+        PaymentService -->> OrderService: declinePayment(orderId)
         Note over OrderService: статус лишається pendingPayment
         OrderService ->> Клієнт: notifyClient(orderId, paymentDeclined)
     end
@@ -79,15 +81,16 @@ sequenceDiagram
     PaymentService ->> OrderService: confirmPayment(orderId)
     activate OrderService
     OrderService ->>+ StockService: checkStock(guitarId, quantity)
+    deactivate StockService
     alt товару достатньо
-        StockService -->>- OrderService: available
+        StockService -->> OrderService: available
         OrderService ->> OrderService: updateStatus(orderId, processing)
         loop для кожної позиції замовлення
             OrderService ->>+ StockService: decreaseStock(guitarId, quantity)
             StockService -->>- OrderService: ok
         end
     else товару недостатньо
-        StockService -->>- OrderService: unavailable
+        StockService -->> OrderService: unavailable
         Note over OrderService: статус лишається pendingPayment
         OrderService ->> Клієнт: notifyClient(orderId, outOfStock)
     end
