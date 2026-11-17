@@ -6,21 +6,21 @@ flowchart TD
     Wait --> DecPay{"Відповідь PaymentService"}
 
     DecPay -->|"[підтверджено]<br/>confirmPayment(orderId)"| CheckStock["Система → StockService: checkStock(guitarId, quantity)"]
-    DecPay -->|"[відхилено]<br/>declinePayment(orderId)"| NotifyDeclined["notifyClient(orderId, paymentDeclined)"]
-    DecPay -->|"[таймаут 10 с]"| NotifyTimeout["notifyClient(orderId, paymentTimeout)"]
+    DecPay -->|"[відхилено]<br/>declinePayment(orderId)"| NotifyDeclined["notifyClient(orderId, paymentDeclined)<br/>без очікування відповіді"]
+    DecPay -->|"[таймаут 10 с]"| NotifyTimeout["notifyClient(orderId, paymentTimeout)<br/>без очікування відповіді"]
 
     NotifyDeclined --> EndDeclined((Кінець: pendingPayment))
     NotifyTimeout --> EndTimeout((Кінець: pendingPayment))
 
     CheckStock --> DecStock{"Перевірка наявності"}
-    DecStock -->|"[товару недостатньо]"| NotifyOutOfStock["notifyClient(orderId, outOfStock)"]
+    DecStock -->|"[товару недостатньо]"| NotifyOutOfStock["notifyClient(orderId, outOfStock)<br/>без очікування відповіді"]
     NotifyOutOfStock --> EndOutOfStock((Кінець: pendingPayment))
 
     DecStock -->|"[товару достатньо]"| UpdateStatus["updateStatus(orderId, processing)"]
     UpdateStatus --> Fork[["Fork"]]
 
     Fork --> DecrStock["decreaseStock(guitarId, quantity)<br/>для кожної позиції"]
-    Fork --> NotifyProc["notifyClient(orderId, processing)"]
+    Fork --> NotifyProc["notifyClient(orderId, processing)<br/>без очікування відповіді"]
 
     DecrStock --> Join[["Join"]]
     NotifyProc --> Join
