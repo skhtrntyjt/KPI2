@@ -14,8 +14,10 @@
    - відповіді немає за 10 с: notifyClient(orderId, paymentTimeout),
      статус лишається pendingPayment, кінець.
 5. Система → StockService: checkStock(guitarId, quantity).
-   Розгалуження: товару недостатньо: notifyClient(orderId, outOfStock),
-   статус лишається pendingPayment, кінець.
+   Розгалуження:
+   - товару достатньо: крок 6;
+   - товару недостатньо: notifyClient(orderId, outOfStock),
+     статус лишається pendingPayment, кінець.
 6. updateStatus(orderId, processing).
 7. Паралельно (fork):
    - decreaseStock(guitarId, quantity) для кожної позиції;
